@@ -1,26 +1,20 @@
 import React, { useReducer, useState } from "react";
-
-const initialState = {
-  toDos: []
-}
-const ADD = "add";
-
-const reducer = (state, action) => {
-  switch(action.type) {
-    case ADD:
-      return { toDos: [...state.toDos, {text: action.payload}] };
-    default:
-      throw new Error();
-  }
-}
+import reducer, {
+  initialState,
+  ADD,
+  DEL,
+  COMPLETE,
+  UNCOMPLETE
+} from "./reducer";
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [newToDo, setNewToDo] = useState();
+  const [newToDo, setNewToDo] = useState("");
   const onSubmit = e => {
     e.preventDefault();
-    dispatch({ type: ADD, payload: newToDo })
-  }
+    dispatch({ type: ADD, payload: newToDo });
+    setNewToDo("");
+  };
   const onChange = e => {
     const {
       target: { value }
@@ -41,26 +35,31 @@ function App() {
       </form>
       <ul>
         <h3>To Dos</h3>
-        {state.toDos.map((toDo, index) => <li key={index}>{toDo.text}</li> )}
+        {state.toDos.map((toDo) => (<li key={toDo.id}>
+          <span>
+            {toDo.text}
+          </span>
+          <button onClick={() => dispatch({type: DEL, payload: toDo.id})}>Delete</button>
+          <button onClick={() => dispatch({type: COMPLETE, payload: toDo.id})}>Complete</button>
+        </li> ))}
+      </ul>
+      <ul>
+        {state.completed.length !== 0 && (
+          <>
+          <h2>Completed</h2>
+          {state.completed.map((toDo) => (
+          <li key={toDo.id}>
+            <span>
+              {toDo.text}
+            </span>
+            <button onClick={() => dispatch({type: DEL, payload: toDo.id})}>Delete</button>
+            <button onClick={() => dispatch({type: UNCOMPLETE, payload: toDo.id})}>Uncomplete</button>
+          </li> ))}
+          </>
+        )}
       </ul>
     </>
   )
 }
 
 export default App;
-
-
-// import React, {useState} from "react";
-// import Screen from "./Screen";
-// import Lang from "./context";
-// import translations from "./translations"
-// function App() {
-//   return (
-//     <Lang defaultLang="en" translations={translations}>
-//       <Screen />
-//     </Lang>
-//   )
-// }
-
-// export default App;
-
